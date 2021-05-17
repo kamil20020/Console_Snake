@@ -1,6 +1,6 @@
 #include <iostream>
-#include <conio.h>
-#include <windows.h>
+#include <unistd.h>	// sleep
+#include <ncurses.h>
 
 using namespace std;
 
@@ -21,12 +21,8 @@ int direction = 0;
 
 void gotoxy(int x, int y) { // ustawienie pozycji kursora (kreska w konsoli)
 
-    COORD c;
-
-    c.X = x;
-    c.Y = y;
-
-    SetConsoleCursorPosition(GetStdHandle(STD_OUTPUT_HANDLE), c);
+    move(y, x);
+	refresh();
 }
 
 void clearSnake() {
@@ -34,7 +30,7 @@ void clearSnake() {
     for (int i = 0; i < sizeBody; i++) {
 
         gotoxy(bodyX[i], bodyY[i]);
-        cout << " ";
+        printw(" ");
     }
 }
 
@@ -42,26 +38,26 @@ void drawFrame() {
 
     for (int j = 1; j < fieldX; j++) {
 
-        cout << "#";
+        printw("#");
     }
 
-    cout << endl;
+    printw("\n");
 
     for (int i = 0; i < fieldY; i++) {
 
-        cout << "#";
+        printw("#");
 
         for (int j = 1; j < fieldX-2; j++) {
 
-            cout << " ";
+            printw(" ");
         }
 
-        cout << "#" <<endl;
+        printw("#\n");
     }
 
     for (int j = 1; j < fieldX; j++) {
 
-        cout << "#";
+        printw("#");
     }
 }
 
@@ -70,58 +66,54 @@ void drawSnake() {
     for (int i = 0; i < sizeBody; i++) {
 
         gotoxy(bodyX[i], bodyY[i]);
-        cout << "o";
+        printw("o");
     }
 }
 
 void drawFood() {
 
     gotoxy(foodX, foodY);
-    cout << "$";
+    printw("$");
 }
 
 void drawPoints(int x, int y) {
 
     gotoxy(x, y);
-    cout << "Punkty: " << points;
+    printw("Punkty: %d", points);
 }
 
 void keyUse() {
 
-    if (_kbhit()) {
+	switch (getch()) {
 
-        switch (_getch()) {
+		case 27: //0
 
-        case 27:
+			break;
 
-            //doEnd = true;
-            break;
+		case 119: //W
 
-        case 119: //W
+			if (direction != 2)
+				direction = 1;
+			break;
 
-            if (direction != 2)
-                direction = 1;
-            break;
+		case 115: //S
 
-        case 115: //S
+			if (direction != 1)
+				direction = 2;
+			break;
 
-            if (direction != 1)
-                direction = 2;
-            break;
+		case 97: //A
 
-        case 97: //A
+			if (direction != 4)
+				direction = 3;
+			break;
 
-            if (direction != 4)
-                direction = 3;
-            break;
+		case 100: //D
 
-        case 100: //D
-
-            if (direction != 3)
-                direction = 4;
-            break;
-        }
-    }
+			if (direction != 3)
+				direction = 4;
+			break;
+	}
 }
 
 void setPreviousPosition(int *prevBodyX, int *prevBodyY) {
@@ -321,14 +313,6 @@ bool checkDoAteItself() {
 
 int main()
 {
-    // kod od 346-352 jest potrzebny, aby ukryc konsolowy kursor
-    HANDLE myconsole = GetStdHandle(STD_OUTPUT_HANDLE);
-
-    CONSOLE_CURSOR_INFO cursor;
-    cursor.bVisible = false;
-    cursor.dwSize = 1;
-
-    SetConsoleCursorInfo(myconsole, &cursor);
 
     bodyX[0] = 10;
     bodyY[0] = 10;
@@ -341,16 +325,24 @@ int main()
     bodyX[4] = 6;
     bodyY[4] = 10;
 
+	initscr(); // initialize ncurses
+	//raw();     // CTRL-Z dont end program etc.
+    noecho();  // pressed symbols wont be printed to screen
+	nodelay(stdscr, TRUE); // without waiting for getch
+
+	curs_set(0); //hide cursor
+
     drawFrame();
     drawSnake();
     drawFood();
-    drawPoints(60, 10);
+    drawPoints(55, 10);
+	refresh();
 
     while (true) {
 
-        Sleep(100);
+		usleep(100000); //funkcja dla mikrosekund
 
-        clearSnake();
+		clearSnake();
 
         keyUse();
 
@@ -363,7 +355,10 @@ int main()
 
         drawFood();
         drawSnake();
-        drawPoints(60, 10);
+        drawPoints(55, 10);
+		refresh();
     }
+
+	endwin(); // end ncurses
 }
 
