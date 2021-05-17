@@ -124,6 +124,15 @@ void keyUse() {
     }
 }
 
+void setPreviousPosition(int *prevBodyX, int *prevBodyY) {
+
+    for (int i = 1; i < sizeBody; i++) {
+
+        bodyX[i] = prevBodyX[i - 1];
+        bodyY[i] = prevBodyY[i - 1];
+    }
+}
+
 void moving() {
 
     int *prevBodyX = new int[sizeBody]; // dynamiczne, gdyz nie wiedzialem jak zrobic zwykla tablice o rozmiarze rownym zmiennej
@@ -142,12 +151,7 @@ void moving() {
             if (bodyY[0] >= 1) {
 
                 bodyY[0]--;
-
-                for (int i = 1; i < sizeBody; i++) {
-
-                    bodyX[i] = prevBodyX[i - 1];
-                    bodyY[i] = prevBodyY[i - 1];
-                }
+                setPreviousPosition(prevBodyX, prevBodyY);
             }
 
             break;
@@ -157,12 +161,7 @@ void moving() {
             if (bodyY[0] <= fieldY) {
 
                 bodyY[0]++;
-
-                for (int i = 1; i < sizeBody; i++) {
-
-                    bodyX[i] = prevBodyX[i - 1];
-                    bodyY[i] = prevBodyY[i - 1];
-                }
+                setPreviousPosition(prevBodyX, prevBodyY);
             }
 
             break;
@@ -172,12 +171,7 @@ void moving() {
             if (bodyX[0] >= 1) {
 
                 bodyX[0]--;
-
-                for (int i = 1; i < sizeBody; i++) {
-
-                    bodyX[i] = prevBodyX[i - 1];
-                    bodyY[i] = prevBodyY[i - 1];
-                }
+                setPreviousPosition(prevBodyX, prevBodyY);
             }
 
             break;
@@ -187,12 +181,7 @@ void moving() {
             if (bodyX[0] <= fieldX - 3) {
 
                 bodyX[0]++;
-
-                for (int i = 1; i < sizeBody; i++) {
-
-                    bodyX[i] = prevBodyX[i - 1];
-                    bodyY[i] = prevBodyY[i - 1];
-                }
+                setPreviousPosition(prevBodyX, prevBodyY);
             }
 
             break;
@@ -294,31 +283,24 @@ bool checkDoTouchWall() {
 
         case 1:
 
-            if (bodyY[0] < 1) {
-
+            if (bodyY[0] < 1)
                 return true;
-            }
-
+           break;
         case 2:
 
-            if (bodyY[0] > fieldY) {
-
+            if (bodyY[0] > fieldY)
                 return true;
-            }
-
+            break;
         case 3:
 
-            if (bodyX[0] < 1) {
-
+            if (bodyX[0] < 1)
                 return true;
-            }
-
+            break;
         case 4:
 
-            if (bodyX[0] > fieldX - 3) {
-
+            if (bodyX[0] > fieldX - 3)
                 return true;
-            }
+            break;
     }
 
     return false;
