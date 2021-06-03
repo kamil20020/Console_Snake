@@ -2,6 +2,8 @@
 #include <unistd.h>	// sleep
 #include <ncurses.h>
 
+extern "C" unsigned int keyService(unsigned int key, unsigned int direction);
+
 using namespace std;
 
 int* bodyX = new int[5];
@@ -84,36 +86,7 @@ void drawPoints(int x, int y) {
 
 void keyUse() {
 
-	switch (getch()) {
-
-		case 27: //0
-
-			break;
-
-		case 119: //W
-
-			if (direction != 2)
-				direction = 1;
-			break;
-
-		case 115: //S
-
-			if (direction != 1)
-				direction = 2;
-			break;
-
-		case 97: //A
-
-			if (direction != 4)
-				direction = 3;
-			break;
-
-		case 100: //D
-
-			if (direction != 3)
-				direction = 4;
-			break;
-	}
+	direction = keyService(getch(), direction);
 }
 
 void setPreviousPosition(int *prevBodyX, int *prevBodyY) {
