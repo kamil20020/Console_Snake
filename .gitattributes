@@ -1,1 +1,2 @@
+*.s linguist-detectable=true
 *.s linguist-language=Assembly
