@@ -45,13 +45,8 @@ mov $4, %eax
 jmp stack
 
 default:
-
 mov 12(%ebp), %eax
 
 stack:
-push %eax
-add $4, %eax
-pop %eax
-
 pop %ebp
 ret
