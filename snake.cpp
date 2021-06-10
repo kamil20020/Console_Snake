@@ -3,7 +3,11 @@
 #include <ncurses.h>
 
 extern "C" unsigned int keyService(unsigned int key, unsigned int direction);
+
 extern "C" unsigned int ateItself(unsigned int sizeBody, unsigned int *bodyX, unsigned int *bodyY);
+
+extern "C" unsigned int checkDoTouchWall(unsigned int direction, unsigned int headX, unsigned int headY, 
+								 unsigned int fieldX, unsigned int fieldY);
 
 using namespace std;
 
@@ -20,7 +24,7 @@ int foodY = 15;
 
 int points = 0;
 
-int direction = 0;
+int direction = 4;
 
 void gotoxy(int x, int y) { // ustawienie pozycji kursora (kreska w konsoli)
 
@@ -83,6 +87,21 @@ void drawPoints(int x, int y) {
 
     gotoxy(x, y);
     printw("Punkty: %d", points);
+}
+
+void welcomeMessage(){
+
+	gotoxy(10, 200);
+	printw("Nacisnij klawisz SPACE aby rozpoczac rozgrywke");
+
+	int sign = -1;
+	
+	while(sign != 32){
+
+		sign = getch();
+	}
+
+	clear();
 }
 
 void keyUse() {
@@ -253,35 +272,6 @@ void eatingFoodLogic() {
     }
 }
 
-bool checkDoTouchWall() {
-
-    switch (direction) {
-
-        case 1:
-
-            if (bodyY[0] < 1)
-                return true;
-           break;
-        case 2:
-
-            if (bodyY[0] > fieldY)
-                return true;
-            break;
-        case 3:
-
-            if (bodyX[0] < 1)
-                return true;
-            break;
-        case 4:
-
-            if (bodyX[0] > fieldX - 3)
-                return true;
-            break;
-    }
-
-    return false;
-}
-
 int main(){
 
     bodyX[0] = 10;
@@ -299,14 +289,17 @@ int main(){
 	//raw();     // CTRL-Z dont end program etc.
     noecho();  // pressed symbols wont be printed to screen
 	nodelay(stdscr, TRUE); // without waiting for getch
-
 	curs_set(0); //hide cursor
+
+	welcomeMessage();
 
     drawFrame();
     drawSnake();
     drawFood();
     drawPoints(55, 10);
 	refresh();
+
+	usleep(1000000);
 
     while (true) {
 
@@ -318,9 +311,11 @@ int main(){
 
         moving();
 
-        if (checkDoTouchWall() || ateItself(sizeBody, bodyX, bodyY) == 1)
-			break;
+        if (checkDoTouchWall(direction, bodyX[0], bodyY[0], fieldX, fieldY) == 1 || 
+			ateItself(sizeBody, bodyX, bodyY) == 1){
 
+			break;
+		}
         eatingFoodLogic();
 
         drawFood();
