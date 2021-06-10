@@ -3,11 +3,12 @@
 #include <ncurses.h>
 
 extern "C" unsigned int keyService(unsigned int key, unsigned int direction);
+extern "C" unsigned int ateItself(unsigned int sizeBody, unsigned int *bodyX, unsigned int *bodyY);
 
 using namespace std;
 
-int* bodyX = new int[5];
-int* bodyY = new int[5];
+unsigned int* bodyX = new unsigned int[5];
+unsigned int* bodyY = new unsigned int[5];
 
 int sizeBody = 5;
 
@@ -86,10 +87,10 @@ void drawPoints(int x, int y) {
 
 void keyUse() {
 
-	direction = keyService(getch(), direction);
+	direction = keyService(getch(), direction); 
 }
 
-void setPreviousPosition(int *prevBodyX, int *prevBodyY) {
+void setPosition(unsigned int *prevBodyX, unsigned int *prevBodyY) {
 
     for (int i = 1; i < sizeBody; i++) {
 
@@ -100,14 +101,16 @@ void setPreviousPosition(int *prevBodyX, int *prevBodyY) {
 
 void moving() {
 
-    int *prevBodyX = new int[sizeBody]; // dynamiczne, gdyz nie wiedzialem jak zrobic zwykla tablice o rozmiarze rownym zmiennej
-    int *prevBodyY = new int[sizeBody];
+    unsigned int *prevBodyX = new unsigned int[sizeBody]; // dynamiczne, gdyz nie wiedzialem jak zrobic zwykla tablice o rozmiarze rownym zmiennej
+    unsigned int *prevBodyY = new unsigned int[sizeBody];
 
     for (int i = 0; i < sizeBody; i++) {
 
         prevBodyX[i] = bodyX[i];
         prevBodyY[i] = bodyY[i];
     }
+
+	bool shouldChange = false;
 
     switch (direction) {
 
@@ -116,7 +119,7 @@ void moving() {
             if (bodyY[0] >= 1) {
 
                 bodyY[0]--;
-                setPreviousPosition(prevBodyX, prevBodyY);
+				shouldChange = true;
             }
 
             break;
@@ -126,7 +129,7 @@ void moving() {
             if (bodyY[0] <= fieldY) {
 
                 bodyY[0]++;
-                setPreviousPosition(prevBodyX, prevBodyY);
+				shouldChange = true;
             }
 
             break;
@@ -136,7 +139,7 @@ void moving() {
             if (bodyX[0] >= 1) {
 
                 bodyX[0]--;
-                setPreviousPosition(prevBodyX, prevBodyY);
+				shouldChange = true;
             }
 
             break;
@@ -146,11 +149,14 @@ void moving() {
             if (bodyX[0] <= fieldX - 3) {
 
                 bodyX[0]++;
-                setPreviousPosition(prevBodyX, prevBodyY);
+				shouldChange = true;
             }
 
             break;
     }
+
+	if(shouldChange)
+		setPosition(prevBodyX, prevBodyY);
 
     delete [] prevBodyX;
     delete [] prevBodyY;
@@ -160,8 +166,8 @@ void incrementBody() {
 
     sizeBody++;
 
-    int* newBodyX = new int[sizeBody];
-    int* newBodyY = new int[sizeBody];
+    unsigned int* newBodyX = new unsigned int[sizeBody];
+    unsigned int* newBodyY = new unsigned int[sizeBody];
 
     for (int i = 0; i < sizeBody - 1; i++) {
 
@@ -183,7 +189,7 @@ void incrementBody() {
         case 1:
 
             bodyX[sizeBody - 1] = bodyX[sizeBody - 2];
-            bodyY[sizeBody - 1] = 3;
+            bodyY[sizeBody - 1] = bodyY[sizeBody - 2] + 1;
 
             break;
 
@@ -210,33 +216,38 @@ void incrementBody() {
     }
 }
 
+void spawnFood(){
+
+	while (true) {
+
+		bool fieldIsClear = false;
+
+		foodX = rand() % fieldX - 3 + 1;
+		foodY = rand() % fieldY + 1;
+
+		for (int i = 0; i < sizeBody; i++) {
+
+			if (bodyX[i] == foodX && bodyY[i] == foodY) {
+
+				fieldIsClear = false;
+				break;
+			}
+			else
+				fieldIsClear = true;
+		}
+
+		if (fieldIsClear)
+			break;
+	}
+}
+
 void eatingFoodLogic() {
 
     if (bodyX[0] == foodX && bodyY[0] == foodY) {
 
         incrementBody();
 
-        while (true) {
-
-            bool fieldIsClear = false;
-
-            foodX = rand() % fieldX - 3 + 1;
-            foodY = rand() % fieldY + 1;
-
-            for (int i = 0; i < sizeBody; i++) {
-
-                if (bodyX[i] == foodX && bodyY[i] == foodY) {
-
-                    fieldIsClear = false;
-                    break;
-                }
-                else
-                    fieldIsClear = true;
-            }
-
-            if (fieldIsClear)
-                break;
-        }
+		spawnFood();
 
         points++;
     }
@@ -271,21 +282,7 @@ bool checkDoTouchWall() {
     return false;
 }
 
-bool checkDoAteItself() {
-
-    for (int i = 1; i < sizeBody; i++) {
-
-        if (bodyX[0] == bodyX[i] && bodyY[0] == bodyY[i]) {
-
-            return true;
-        }
-    }
-
-    return false;
-}
-
-int main()
-{
+int main(){
 
     bodyX[0] = 10;
     bodyY[0] = 10;
@@ -321,8 +318,8 @@ int main()
 
         moving();
 
-        if (checkDoTouchWall() || checkDoAteItself())
-            break;
+        if (checkDoTouchWall() || ateItself(sizeBody, bodyX, bodyY) == 1)
+			break;
 
         eatingFoodLogic();
 

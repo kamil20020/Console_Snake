@@ -1,7 +1,13 @@
 all: snake
 
-snake: snake.cpp keyService.o
-	gcc -m32 keyService.o snake.cpp -o snake -lstdc++ -lncurses
+snake: snake.cpp keyService.o ateItself.o
+	gcc -m32 ateItself.o keyService.o snake.cpp -o snake -lstdc++ -lncurses
+
+ateItself: ateItself.o
+	ld ateItself.o -m elf_i386 -o ateItself
+
+ateItself.o: ateItself.s
+	as --32 ateItself.s -g -o ateItself.o
 
 keyService: keyService.o
 	ld keyService.o -m elf_i386 -o keyService
