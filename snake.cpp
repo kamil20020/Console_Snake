@@ -9,12 +9,7 @@ extern "C" unsigned int ateItself(unsigned int sizeBody, unsigned int *bodyX, un
 extern "C" unsigned int checkDoTouchWall(unsigned int direction, unsigned int headX, unsigned int headY, 
 										 unsigned int fieldX, unsigned int fieldY);
 
-extern "C" unsigned int moveLogic(unsigned int direction, unsigned int *bodyX, unsigned int *bodyY, 
-								  unsigned int fieldX, unsigned int fieldY, unsigned int sizeBody, 
-								  unsigned int *prevBodyX, unsigned int *prevBodyY);
-
-extern "C" unsigned int updateHeadAfterMoveLogic(unsigned int direction, unsigned int *bodyX, unsigned int *bodyY, 
-												 unsigned int fieldX, unsigned int fieldY);
+extern "C" void updateHeadAfterMoveLogic(unsigned int direction, unsigned int &headX, unsigned int &headY);
 
 
 using namespace std;
@@ -51,7 +46,7 @@ void clearSnake() {
 
 void drawFrame() {
 
-    for (int j = 1; j < fieldX; j++) 
+    for (int j = 0; j < fieldX+2; j++) 
         printw("#");
 
     printw("\n");
@@ -60,13 +55,13 @@ void drawFrame() {
 
         printw("#");
 
-        for (int j = 1; j < fieldX-2; j++) 
+        for (int j = 0; j < fieldX; j++) 
             printw(" ");
 
         printw("#\n");
     }
 
-    for (int j = 1; j < fieldX; j++) 
+    for (int j = 0; j < fieldX+2; j++) 
         printw("#");
 }
 
@@ -129,8 +124,9 @@ void moving() {
         prevBodyY[i] = bodyY[i];
     }
 
-	if(updateHeadAfterMoveLogic(direction, bodyX, bodyY, fieldX, fieldY) == 1)
-		setPreviousPosition(prevBodyX, prevBodyY);
+	updateHeadAfterMoveLogic(direction, bodyX[0], bodyY[0]);
+
+	setPreviousPosition(prevBodyX, prevBodyY);
 
     delete [] prevBodyX;
     delete [] prevBodyY;
@@ -196,7 +192,7 @@ void spawnFood(){
 
 		bool fieldIsClear = false;
 
-		foodX = rand() % fieldX - 3 + 1;
+		foodX = rand() % fieldX + 1;
 		foodY = rand() % fieldY + 1;
 
 		for (int i = 0; i < sizeBody; i++) {
@@ -220,6 +216,11 @@ bool checkDoLose(){
 	if (checkDoTouchWall(direction, bodyX[0], bodyY[0], fieldX, fieldY) == 1 || 
 			ateItself(sizeBody, bodyX, bodyY) == 1)
 		return true;
+
+	return false;
+}
+
+bool checkDoWin(){
 
 	return false;
 }
@@ -266,7 +267,7 @@ int main(){
         moving();
 
         if(checkDoLose())
-			break;
+			break; 
 
         eatingFoodLogic();
         drawFood();
@@ -277,4 +278,3 @@ int main(){
 
 	endwin(); // end ncurses
 }
-

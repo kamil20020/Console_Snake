@@ -18,10 +18,12 @@ mov 12(%ebp), %edi
 mov (%edi), %edi
 cmp (%edx, %ecx, 4), %edi
 JNE firstFalse
+
 mov 16(%ebp), %edi
 mov (%edi), %edi
 cmp (%eax, %ecx, 4), %edi
 JE yes
+
 firstFalse:	
 inc %ecx
 dec %esi

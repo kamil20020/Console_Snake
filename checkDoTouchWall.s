@@ -40,12 +40,12 @@ cmp $1, 12(%ebp)	# headX
 JL yes
 jmp not
 
-# headX > fieldX - 3
+# headX >= fieldX+1	
 direction4:
 mov 20(%ebp), %ecx	# headX
-sub $3, %ecx
+inc %ecx
 cmp %ecx, 12(%ebp)	# fieldX
-JG yes
+JGE yes
 jmp not
 
 yes:
