@@ -17,8 +17,6 @@ extern "C" unsigned int updateHeadAfterMoveLogic(unsigned int direction, unsigne
 												 unsigned int fieldX, unsigned int fieldY);
 
 
-int value = 0;
-
 using namespace std;
 
 unsigned int* bodyX = new unsigned int[5];
@@ -53,10 +51,8 @@ void clearSnake() {
 
 void drawFrame() {
 
-    for (int j = 1; j < fieldX; j++) {
-
+    for (int j = 1; j < fieldX; j++) 
         printw("#");
-    }
 
     printw("\n");
 
@@ -64,18 +60,14 @@ void drawFrame() {
 
         printw("#");
 
-        for (int j = 1; j < fieldX-2; j++) {
-
+        for (int j = 1; j < fieldX-2; j++) 
             printw(" ");
-        }
 
         printw("#\n");
     }
 
-    for (int j = 1; j < fieldX; j++) {
-
+    for (int j = 1; j < fieldX; j++) 
         printw("#");
-    }
 }
 
 void drawSnake() {
@@ -105,11 +97,9 @@ void welcomeMessage(){
 	printw("Nacisnij klawisz SPACE aby rozpoczac rozgrywke");
 
 	int sign = -1;
-	
-	while(sign != 32){
 
+	while(sign != 32)
 		sign = getch();
-	}
 
 	clear();
 }
@@ -130,7 +120,7 @@ void setPreviousPosition(unsigned int *prevBodyX, unsigned int *prevBodyY) {
 
 void moving() {
 
-    unsigned int *prevBodyX = new unsigned int[sizeBody]; // dynamiczne, gdyz nie wiedzialem jak zrobic zwykla tablice o rozmiarze rownym zmiennej
+    unsigned int *prevBodyX = new unsigned int[sizeBody];
     unsigned int *prevBodyY = new unsigned int[sizeBody];
 
     for (int i = 0; i < sizeBody; i++) {
@@ -225,14 +215,21 @@ void spawnFood(){
 	}
 }
 
+bool checkDoLose(){
+
+	if (checkDoTouchWall(direction, bodyX[0], bodyY[0], fieldX, fieldY) == 1 || 
+			ateItself(sizeBody, bodyX, bodyY) == 1)
+		return true;
+
+	return false;
+}
+
 void eatingFoodLogic() {
 
     if (bodyX[0] == foodX && bodyY[0] == foodY) {
 
         incrementBody();
-
 		spawnFood();
-
         points++;
     }
 }
@@ -264,20 +261,14 @@ int main(){
     while (true) {
 
 		usleep(100000); //funkcja dla mikrosekund
-
 		clearSnake();
-
         keyUse();
-
         moving();
 
-        if (checkDoTouchWall(direction, bodyX[0], bodyY[0], fieldX, fieldY) == 1 || 
-			ateItself(sizeBody, bodyX, bodyY) == 1){
-
+        if(checkDoLose())
 			break;
-		}
-        eatingFoodLogic();
 
+        eatingFoodLogic();
         drawFood();
         drawSnake();
         drawPoints(55, 10);
@@ -285,7 +276,5 @@ int main(){
     }
 
 	endwin(); // end ncurses
-
-	cout<< value;
 }
 
