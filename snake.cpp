@@ -7,7 +7,17 @@ extern "C" unsigned int keyService(unsigned int key, unsigned int direction);
 extern "C" unsigned int ateItself(unsigned int sizeBody, unsigned int *bodyX, unsigned int *bodyY);
 
 extern "C" unsigned int checkDoTouchWall(unsigned int direction, unsigned int headX, unsigned int headY, 
-								 unsigned int fieldX, unsigned int fieldY);
+										 unsigned int fieldX, unsigned int fieldY);
+
+extern "C" unsigned int moveLogic(unsigned int direction, unsigned int *bodyX, unsigned int *bodyY, 
+								  unsigned int fieldX, unsigned int fieldY, unsigned int sizeBody, 
+								  unsigned int *prevBodyX, unsigned int *prevBodyY);
+
+extern "C" unsigned int updateHeadAfterMoveLogic(unsigned int direction, unsigned int *bodyX, unsigned int *bodyY, 
+												 unsigned int fieldX, unsigned int fieldY);
+
+
+int value = 0;
 
 using namespace std;
 
@@ -109,7 +119,7 @@ void keyUse() {
 	direction = keyService(getch(), direction); 
 }
 
-void setPosition(unsigned int *prevBodyX, unsigned int *prevBodyY) {
+void setPreviousPosition(unsigned int *prevBodyX, unsigned int *prevBodyY) {
 
     for (int i = 1; i < sizeBody; i++) {
 
@@ -129,53 +139,8 @@ void moving() {
         prevBodyY[i] = bodyY[i];
     }
 
-	bool shouldChange = false;
-
-    switch (direction) {
-
-        case 1:
-
-            if (bodyY[0] >= 1) {
-
-                bodyY[0]--;
-				shouldChange = true;
-            }
-
-            break;
-
-        case 2:
-
-            if (bodyY[0] <= fieldY) {
-
-                bodyY[0]++;
-				shouldChange = true;
-            }
-
-            break;
-
-        case 3:
-
-            if (bodyX[0] >= 1) {
-
-                bodyX[0]--;
-				shouldChange = true;
-            }
-
-            break;
-
-        case 4:
-
-            if (bodyX[0] <= fieldX - 3) {
-
-                bodyX[0]++;
-				shouldChange = true;
-            }
-
-            break;
-    }
-
-	if(shouldChange)
-		setPosition(prevBodyX, prevBodyY);
+	if(updateHeadAfterMoveLogic(direction, bodyX, bodyY, fieldX, fieldY) == 1)
+		setPreviousPosition(prevBodyX, prevBodyY);
 
     delete [] prevBodyX;
     delete [] prevBodyY;
@@ -274,16 +239,11 @@ void eatingFoodLogic() {
 
 int main(){
 
-    bodyX[0] = 10;
-    bodyY[0] = 10;
-    bodyX[1] = 9;
-    bodyY[1] = 10;
-    bodyX[2] = 8;
-    bodyY[2] = 10;
-    bodyX[3] = 7;
-    bodyY[3] = 10;
-    bodyX[4] = 6;
-    bodyY[4] = 10;
+	for(int i=0; i < sizeBody; i++){
+
+		bodyX[i] = 10-i;
+		bodyY[i] = 10;
+	}
 
 	initscr(); // initialize ncurses
 	//raw();     // CTRL-Z dont end program etc.
@@ -325,5 +285,7 @@ int main(){
     }
 
 	endwin(); // end ncurses
+
+	cout<< value;
 }
 
