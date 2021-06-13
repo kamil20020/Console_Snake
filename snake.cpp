@@ -17,6 +17,9 @@ extern "C" void updateBodyAfterMove(unsigned int sizeBody, unsigned int *bodyX, 
 extern "C" void updateTailAfterIncrease(unsigned int direction, unsigned int &lastBodyX, unsigned int &lastBodyY, 
 												unsigned int prevLastBodyX, unsigned int prevLastBodyY);
 
+extern "C" unsigned int updatePointsIfAteFood(unsigned int headX, unsigned int headY, unsigned int foodX, 
+										unsigned int foodY, unsigned int &points);
+
 
 using namespace std;
 
@@ -31,7 +34,7 @@ int fieldY = 20;
 int foodX = 30;
 int foodY = 15;
 
-int points = 0;
+unsigned int points = 0;
 
 int direction = 4;
 
@@ -194,12 +197,11 @@ bool checkDoWin(){
 
 void eatingFoodLogic() {
 
-    if (bodyX[0] == foodX && bodyY[0] == foodY) {
+	if(updatePointsIfAteFood(bodyX[0], bodyY[0], foodX, foodY, points) == 1){
 
-        incrementBody();
+		incrementBody();
 		spawnFood();
-        points++;
-    }
+	}
 }
 
 int main(){
