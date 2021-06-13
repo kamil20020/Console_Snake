@@ -11,6 +11,12 @@ extern "C" unsigned int checkDoTouchWall(unsigned int direction, unsigned int he
 
 extern "C" void updateHeadAfterMoveLogic(unsigned int direction, unsigned int &headX, unsigned int &headY);
 
+extern "C" void updateBodyAfterMove(unsigned int sizeBody, unsigned int *bodyX, unsigned int *bodyY, 
+									unsigned int *prevbodyX, unsigned int *prevbodyY);
+
+extern "C" void updateTailAfterIncrease(unsigned int direction, unsigned int &lastBodyX, unsigned int &lastBodyY, 
+												unsigned int prevLastBodyX, unsigned int prevLastBodyY);
+
 
 using namespace std;
 
@@ -104,15 +110,6 @@ void keyUse() {
 	direction = keyService(getch(), direction); 
 }
 
-void setPreviousPosition(unsigned int *prevBodyX, unsigned int *prevBodyY) {
-
-    for (int i = 1; i < sizeBody; i++) {
-
-        bodyX[i] = prevBodyX[i - 1];
-        bodyY[i] = prevBodyY[i - 1];
-    }
-}
-
 void moving() {
 
     unsigned int *prevBodyX = new unsigned int[sizeBody];
@@ -125,8 +122,7 @@ void moving() {
     }
 
 	updateHeadAfterMoveLogic(direction, bodyX[0], bodyY[0]);
-
-	setPreviousPosition(prevBodyX, prevBodyY);
+	updateBodyAfterMove(sizeBody, bodyX, bodyY, prevBodyX, prevBodyY);
 
     delete [] prevBodyX;
     delete [] prevBodyY;
@@ -154,36 +150,7 @@ void incrementBody() {
     bodyX = newBodyX;
     bodyY = newBodyY;
 
-    switch (direction) {
-
-        case 1:
-
-            bodyX[sizeBody - 1] = bodyX[sizeBody - 2];
-            bodyY[sizeBody - 1] = bodyY[sizeBody - 2] + 1;
-
-            break;
-
-        case 2:
-
-            bodyX[sizeBody - 1] = bodyX[sizeBody - 2];
-            bodyY[sizeBody - 1] = bodyY[sizeBody - 2] - 1;
-
-            break;
-
-        case 3:
-
-            bodyX[sizeBody - 1] = bodyX[sizeBody - 2] + 1;
-            bodyY[sizeBody - 1] = bodyY[sizeBody - 2];
-
-            break;
-
-        case 4:
-
-            bodyX[sizeBody - 1] = bodyX[sizeBody - 2] - 1;
-            bodyY[sizeBody - 1] = bodyY[sizeBody - 2];
-
-            break;
-    }
+    updateTailAfterIncrease(direction, newBodyX[sizeBody - 1], newBodyY[sizeBody - 1], newBodyX[sizeBody - 2], newBodyY[sizeBody - 2]);
 }
 
 void spawnFood(){

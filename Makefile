@@ -1,7 +1,20 @@
 all: snake
 
-snake: snake.cpp keyService.o ateItself.o checkDoTouchWall.o updateHeadAfterMoveLogic.o
-	   gcc -m32 ateItself.o keyService.o checkDoTouchWall.o updateHeadAfterMoveLogic.o snake.cpp -o snake -lstdc++ -lncurses
+snake: snake.cpp keyService.o ateItself.o checkDoTouchWall.o updateHeadAfterMoveLogic.o updateBodyAfterMove.o updateTailAfterIncrease.o
+	   gcc -m32 ateItself.o keyService.o checkDoTouchWall.o updateHeadAfterMoveLogic.o updateBodyAfterMove.o updateTailAfterIncrease.o snake.cpp -o snake -lstdc++ -lncurses
+
+updateTailAfterIncrease: updateTailAfterIncrease.o
+	ld updateTailAfterIncrease.o -m elf_i386 -o updateTailAfterIncrease
+
+updateTailAfterIncrease.o: updateTailAfterIncrease.s
+	as --32 updateTailAfterIncrease.s -g -o updateTailAfterIncrease.o
+
+
+updateBodyAfterMove: updateBodyAfterMove.o
+	ld updateBodyAfterMove.o -m elf_i386 -o updateBodyAfterMove
+
+updateBodyAfterMove.o: updateBodyAfterMove.s
+	as --32 updateBodyAfterMove.s -g -o updateBodyAfterMove.o
 
 updateHeadAfterMoveLogic: updateHeadAfterMoveLogic.o
 	ld updateHeadAfterMoveLogic.o -m elf_i386 -o updateHeadAfterMoveLogic
