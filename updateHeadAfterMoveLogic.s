@@ -8,6 +8,7 @@ push %ebp
 mov %esp, %ebp
 
 mov 8(%ebp), %edx	# direction
+mov 20(%ebp), %ecx 	# speed
 
 cmp $1, %edx
 JE direction1
@@ -23,22 +24,22 @@ JE direction4
 
 direction1:
 mov 16(%ebp), %edx	# bodyY
-sub $1, (%edx)
+sub %ecx, (%edx)
 jmp exit
 
 direction2:
 mov 16(%ebp), %edx	# bodyY
-add $1, (%edx)
+add %ecx, (%edx)
 jmp exit
 
 direction3:
 mov 12(%ebp), %edx	# bodyX
-sub $1, (%edx)
+sub %ecx, (%edx)
 jmp exit
 
 direction4:
 mov 12(%ebp), %edx	# bodyX
-add $1, (%edx)
+add %ecx, (%edx)
 
 exit:
 pop %ebp

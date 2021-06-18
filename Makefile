@@ -1,13 +1,19 @@
 all: snake
 
-snake: snake.cpp keyService.o ateItself.o checkDoTouchWall.o updateHeadAfterMoveLogic.o updateBodyAfterMove.o updateTailAfterIncrease.o updatePointsIfAteFood.o
-	   gcc -m32 ateItself.o keyService.o checkDoTouchWall.o updateHeadAfterMoveLogic.o updateBodyAfterMove.o updateTailAfterIncrease.o updatePointsIfAteFood.o snake.cpp -o snake -lstdc++ -lncurses
+snake: snake.cpp keyService.o ateItself.o checkDoTouchWall.o updateHeadAfterMoveLogic.o updateBodyAfterMove.o updateTailAfterIncrease.o collider.o updatePoints.o
+	   gcc -m32 ateItself.o keyService.o checkDoTouchWall.o updateHeadAfterMoveLogic.o updateBodyAfterMove.o updateTailAfterIncrease.o updatePoints.o collider.o snake.cpp -o snake -lSDL2 -lSDL2_image -lstdc++
 
-updatePointsIfAteFood: updatePointsIfAteFood.o
-	ld updatePointsIfAteFood.o -m elf_i386 -o updatePointsIfAteFood
+updatePoints: updatePoints.o
+	ld updatePoints.o -m elf_i386 -o updatePoints
 
-updatePointsIfAteFood.o: updatePointsIfAteFood.s
-	as --32 updatePointsIfAteFood.s -g -o updatePointsIfAteFood.o
+updatePoints.o: updatePoints.s
+	as --32 updatePoints.s -g -o updatePoints.o
+
+collider: collider.o
+	ld collider.o -m elf_i386 -o collider
+
+collider.o: collider.s
+	as --32 collider.s -g -o collider.o
 
 updateTailAfterIncrease: updateTailAfterIncrease.o
 	ld updateTailAfterIncrease.o -m elf_i386 -o updateTailAfterIncrease
