@@ -21,32 +21,32 @@ JE direction3
 cmp $4, %edx
 JE direction4
 
-# headY < 0
+# headY <= 0
 direction1:
 cmp $0, 16(%ebp)	# headY
-JL yes
+JLE yes
 jmp not
 
-# headY + headSize > fieldY
+# headY + headSize >= fieldY
 direction2:
 mov 16(%ebp), %ecx	# headY
 add 28(%ebp), %ecx	# headY = headY + size
 cmp 24(%ebp), %ecx	# fieldY
-JG yes
+JGE yes
 jmp not
 
-# headX < 0
+# headX <= 0
 direction3:
 cmp $1, 12(%ebp)	# headX
-JL yes
+JLE yes
 jmp not
 
-# headX + headSize > fieldX
+# headX + headSize >= fieldX
 direction4:
 mov 12(%ebp), %ecx	# headX
 add 28(%ebp), %ecx	# headX = headX + size
 cmp 20(%ebp), %ecx	# fieldX
-JG yes
+JGE yes
 jmp not
 
 yes:
