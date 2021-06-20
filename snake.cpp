@@ -6,7 +6,7 @@ using namespace std;
 
 extern "C" unsigned int keyService(unsigned int key, unsigned int direction);
 
-extern "C" unsigned int ateItself(unsigned int sizeBody, unsigned int *bodyX, unsigned int *bodyY);
+extern "C" unsigned int ateItself(unsigned int sizeBody, unsigned int *bodyX, unsigned int *bodyY, unsigned int snakeShapeSize);
 
 extern "C" unsigned int checkDoTouchWall(unsigned int direction, unsigned int headX, unsigned int headY, 
 										 unsigned int fieldX, unsigned int fieldY, unsigned size);
@@ -143,7 +143,7 @@ public:
 	bool checkDoLose(){
 
 		if (checkDoTouchWall(direction, bodyX[0], bodyY[0], fieldX, fieldY, snakeShapeSize) == 1 || 
-				ateItself(sizeBody, bodyX, bodyY) == 1)
+				ateItself(sizeBody, bodyX, bodyY, snakeShapeSize) == 1)
 			return true;
 
 		return false;
